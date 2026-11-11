@@ -922,7 +922,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     },
     level2: {
       title: '第二关 · 精诚 · 金石为开',
-      goal: '砖墙悬在精诚楼前广场，接住小球、磨开全部 50 块顽石即通关。',
+      goal: '砖墙悬在正心楼与精诚楼之间的空地，接住小球、磨开全部 50 块顽石即通关。',
       how: '鼠标左右移动或 ←/→（A/D）移动挡板 · 空格或点击发射；球落出底边扣一条生命。',
       extra: '砖墙中央的红色砖藏着星火；每磨开 8 块挡板加宽。3 条生命 · 限时 150 秒。'
     },
@@ -1306,10 +1306,10 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
 
     /* 检查点标记 */
     const cpMat = new THREE.MeshBasicMaterial({ color: 0x6fe3a0 });
-    const checkpoints = [{ x: 112.5, z: 56, hit: false }, { x: 72, z: 106.5, hit: false }];
+    const checkpoints = [{ x: 112.5, z: 56, hit: false }, { x: 95, z: 106.5, hit: false }];
     checkpoints.forEach((cp) => {
       const m = new THREE.Mesh(new THREE.BoxGeometry(4, 0.06, 4), cpMat);
-      m.position.set(cp.x, bw.groundY(cp.x, cp.z) + 0.06, cp.z);
+      m.position.set(cp.x, GY + 0.06, cp.z);
       bw.group.add(m);
     });
 
@@ -1468,7 +1468,8 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
         updateHud();
       }
       if (!finished) {
-        const gy = bw.groundY(pc.x, pc.z);
+        /* 关卡一全程平地：不取实测地面高度，避免从二层连廊下方经过时被抬上楼板 */
+        const gy = GY;
         const cam = bw.H.camera;
         cam.position.set(pc.x, gy + 1.62, pc.z);
         cam.lookAt(pc.x + Math.sin(facing) * 6, gy + 1.42, pc.z + Math.cos(facing) * 6);
@@ -1532,7 +1533,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     bw.setFov(55);
     bw.hidePlayer();
     const W = 480, H = 320;
-    const S = 0.045, X0 = 52.2, Z0 = 140;
+    const S = 0.045, X0 = 39.2, Z0 = 124;
     const wx = (x) => X0 + x * S;
     const wy = (y) => (H - y) * S;
     const hud = mkHud(api.host);
@@ -1559,7 +1560,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
 
     /* 砖墙门框 + 标牌 */
     const fx0 = wx(LEFT - 10), fx1 = wx(LEFT + COLS * BW + 10);
-    const fy0 = wy(TOP + ROWS * (BH + 4) + 10), fy1 = wy(TOP - 26);
+    const fy0 = bw.groundY(50, Z0), fy1 = wy(TOP - 26);
     bw.group.add(vBox(THREE, 0.5, fy1 - fy0, 0.6, 0x6d4a2f, fx0, (fy0 + fy1) / 2, Z0));
     bw.group.add(vBox(THREE, 0.5, fy1 - fy0, 0.6, 0x6d4a2f, fx1, (fy0 + fy1) / 2, Z0));
     bw.group.add(vBox(THREE, fx1 - fx0 + 0.5, 0.6, 0.6, 0x6d4a2f, (fx0 + fx1) / 2, fy1, Z0));
@@ -1672,8 +1673,8 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
         const cam = bw.H.camera;
         const aspect = cam.aspect || (innerWidth / Math.max(1, innerHeight));
         const dist = Math.max(23.1 / aspect, 18.3);
-        cam.position.set(63, 8.9, Z0 - dist);
-        cam.lookAt(63, 8.9, Z0);
+        cam.position.set(50, 8.9, Z0 - dist);
+        cam.lookAt(50, 8.9, Z0);
       }
       raf = requestAnimationFrame(tick);
     }
@@ -2963,15 +2964,15 @@ const POIS = [
   {
     id: 'timeline', kind: 'activity', activity: 'level2', order: 2,
     name: '精诚楼 · 金石为开', label: '金石为开', icon: '石',
-    x: 63, z: 140, y: 3.4, radius: 6.4, color: 0x8db4ff,
-    desc: '精诚楼北侧的像素打砖块：移动挡板，磨开全部顽石。',
+    x: 50, z: 124, y: 3.4, radius: 6.4, color: 0x8db4ff,
+    desc: '正心楼与精诚楼之间空地上的像素打砖块：移动挡板，磨开全部顽石。',
     completedText: '你已收下“年轮 · 求索”的时光碎片。'
   },
   {
     id: 'circuit', kind: 'activity', activity: 'level3', order: 3,
     name: '芯越楼 · 未来跑跳', label: '未来跑跳', icon: '芯',
-    x: -90, z: 79, y: 3.4, radius: 6.4, color: 0x6fe3d4,
-    desc: '通往芯越楼的 2.5D 横版跳跃：自动奔跑，二段跳越过尖刺与深坑。',
+    x: -90, z: 187.5, y: 3.4, radius: 6.4, color: 0x6fe3d4,
+    desc: '入口在力行桥，通往芯越楼的 2.5D 横版跳跃：自动奔跑，二段跳越过尖刺与深坑。',
     completedText: '你已收下“芯火 · 传承”的时光碎片。'
   },
   {
@@ -2984,8 +2985,8 @@ const POIS = [
   {
     id: 'postcard', kind: 'activity', activity: 'level5', order: 5,
     name: '操场 · 阳光乐跑', label: '阳光乐跑', icon: '跑',
-    x: -160, z: 60, y: 3.4, radius: 6.4, color: 0xc9a2ff,
-    desc: '操场蓝色跑道上的 3D 跑酷：换道、跨栏、滑铲，跑完 400 米。',
+    x: -45, z: 65, y: 3.4, radius: 6.4, color: 0xc9a2ff,
+    desc: '从校园中央空地进入操场蓝色跑道：换道、跨栏、滑铲，跑完 400 米。',
     completedText: '你已收下“寄语 · e 家人”的时光碎片。'
   },
   {
